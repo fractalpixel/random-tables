@@ -62,6 +62,7 @@ export default class MyPlugin extends Plugin {
 					// This command will only show up in Command Palette when the check function returns true
 					return true;
 				}
+				return false
 			}
 		});
 
