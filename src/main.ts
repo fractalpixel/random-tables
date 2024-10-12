@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, MarkdownFileInfo, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
@@ -11,9 +11,9 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
 }
 
 export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+	settings!: MyPluginSettings;
 
-	async onload() {
+	override async onload() {
 		await this.loadSettings();
 
 		// This creates an icon in the left ribbon.
@@ -40,10 +40,10 @@ export default class MyPlugin extends Plugin {
 		this.addCommand({
 			id: 'sample-editor-command',
 			name: 'Sample editor command',
-			editorCallback: (editor: Editor, view: MarkdownView) => {
+			editorCallback: (editor: Editor, view: MarkdownView | MarkdownFileInfo) => {
 				console.log(editor.getSelection());
 				editor.replaceSelection('Sample Editor Command');
-			}
+			}			
 		});
 		// This adds a complex command that can check whether the current state of the app allows execution of the command
 		this.addCommand({
@@ -78,7 +78,7 @@ export default class MyPlugin extends Plugin {
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
 
-	onunload() {
+	override onunload() {
 
 	}
 
@@ -96,12 +96,12 @@ class SampleModal extends Modal {
 		super(app);
 	}
 
-	onOpen() {
+	override onOpen() {
 		const {contentEl} = this;
 		contentEl.setText('Woah!');
 	}
 
-	onClose() {
+	override onClose() {
 		const {contentEl} = this;
 		contentEl.empty();
 	}
