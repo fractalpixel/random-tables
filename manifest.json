@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
-	"version": "1.0.0",
+	"id": "random-tables",
+	"name": "Random Tables",
+	"version": "0.1.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Turn a table, list, or paragraph with embedded alternatives into a random generator by prefixing a keyword.  Designed for tabletop RPGs and other creative uses.  Supports custom weights, or defaults such as first results being most common. Nested generators are supported. Re-roll results or parts of them, and save in the same document or a new one.",
+	"author": "fractalpixel",
+	"authorUrl": "https://github.com/fractalpixel/random-tables#readme",
+	"fundingUrl": "",
 	"isDesktopOnly": false
 }
