@@ -10,6 +10,7 @@ Under development!
 
 
 ----------
+*Original plugin template documentation:*
 
 
 
