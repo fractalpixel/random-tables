@@ -1,8 +1,31 @@
 /*
+ * CSS Styles for the Random Generator plugin.
+ */
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+/**
+ * Styles for the random generator button.
+ * Used both in the editor and preview.
+ */
+.RandomGenerationButton {
+    font-weight: bold;
+    font-family: sans-serif;
 
-If your plugin does not need CSS, delete this file.
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: #282;
+    color: #FFF;
+    border: 3px solid #3a3;
+    border-radius: 10px;
 
-*/
+    cursor: pointer;
+    user-select: none;
+}
+.RandomGenerationButton:hover {
+    border-color: rgb(208, 217, 127);
+}
+.RandomGenerationButton:active {
+    background-color: #3a3;
+}
+
