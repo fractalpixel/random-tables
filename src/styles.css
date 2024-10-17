@@ -29,3 +29,29 @@
     background-color: #3a3;
 }
 
+
+
+.RandomGenerationSaveButton {
+    font-weight: bold;
+    font-family: sans-serif;
+
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: rgb(34, 116, 136);
+    color: #FFF;
+    border: 3px solid rgb(51, 109, 170);
+    border-radius: 10px;
+
+    cursor: pointer;
+    user-select: none;
+}
+
+.RandomGenerationSaveButton:hover {
+    border-color: rgb(127, 213, 217);
+}
+
+.RandomGenerationSaveButton:active {
+    background-color: rgb(51, 144, 170);
+}

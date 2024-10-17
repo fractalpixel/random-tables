@@ -1,10 +1,16 @@
 
 import { MarkdownView, Plugin } from 'obsidian';
 
-import { randomButtonsForEditorPlugin } from './RandomButtonsForEditor';
+import { randomButtonsForEditorPlugin } from './editor-buttons';
 import { DEFAULT_SETTINGS, RandomGeneratorSettingTab, RandomTablesPluginSettings } from './settings';
-import generateRandomResult from "./generate"
+import generateRandomResult, { saveRandomResult } from "./generate"
 
+
+
+// Hacky global context for communicating with code mirror plugin
+export let RANDOM_TABLES_PLUGIN_CONTEXT = {
+	randomTablesPlugin: null as (RandomTablesPlugin | null)
+}
 
 
 
@@ -15,7 +21,11 @@ export default class RandomTablesPlugin extends Plugin {
 	override async onload() {
 		//console.log("Random Tables loaded")
 
-		await this.loadSettings();
+		// Passing around values to CodeMirror plugins and such seems to be complicated 
+		// (couldn't figure out how), so we'll resort to a global context...
+		RANDOM_TABLES_PLUGIN_CONTEXT.randomTablesPlugin = this
+
+		await this.loadSettings();		
 
 		//this.registerEditorExtension(generateButton);
 
@@ -69,10 +79,14 @@ export default class RandomTablesPlugin extends Plugin {
 					// If checking is true, we're simply "checking" if the command can be run.
 					// If checking is false, then we want to actually perform the operation.
 					if (!checking) {
+						// Perform operation
+
 						const pos = editor.getCursor("from")
 
+						//const documentName = markdownView.file?.name || "Unknown"
+
 						// Do the generation
-						generateRandomResult(editor, pos)
+						generateRandomResult(editor, pos.line)
 					}
 
 					// This command will only show up in Command Palette when the check function returns true
@@ -81,6 +95,8 @@ export default class RandomTablesPlugin extends Plugin {
 				return false
 			}
 		});
+
+		
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new RandomGeneratorSettingTab(this.app, this));
@@ -110,6 +126,26 @@ export default class RandomTablesPlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
+
+	public doGenerateAction(line: number) {
+		const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+		const editor = markdownView?.editor
+		if (editor != null) {
+			generateRandomResult(editor, line)
+		}
+
+	}
+
+	public doSaveAction(line: number) {
+		const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+		const editor = markdownView?.editor
+		if (editor != null) {
+			saveRandomResult(editor, line)
+		}
+
+	}
+
+	
 }
 
 /*
