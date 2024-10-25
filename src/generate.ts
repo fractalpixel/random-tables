@@ -1,4 +1,4 @@
-import { Editor, EditorPosition, EditorRange } from "obsidian"
+import { Editor, EditorPosition } from "obsidian"
 import RandomGenerator, { EMPTY_GENERATOR } from "./RandomTable"
 import { KEYWORD_END_BRACKET, KEYWORD_END_BRACKET_ESCAPED, KEYWORD_START_BRACKET, KEYWORD_START_BRACKET_ESCAPED, RANDOM_RESULT_KEYWORD, RANDOM_TABLE_KEYWORD } from "./settings"
 
@@ -16,7 +16,6 @@ export default function generateRandomResult(editor: Editor, line: number, searc
     // (if none is, go forward (or back) instead until random generator is encountered, otherwise abort)
     const randomEntry = findNext(RANDOM_TABLE_KEYWORD, line, editor, RANDOM_RESULT_KEYWORD, searchForward)
     if (!randomEntry) {
-        console.log("No random header found, line was " + line)
         return // No random table found at this position
     }
 
