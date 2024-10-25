@@ -1,49 +1,6 @@
 import { Editor, EditorPosition, EditorRange } from "obsidian"
-import { RANDOM_RESULT_KEYWORD, RANDOM_TABLE_KEYWORD } from "./editor-buttons"
-
-interface GeneratorName {
-    name: string
-    nameLine: number
-    //document: 
-}
-
-// TODO: Remove?  Not used?
-function findGeneratorNameAndLine(editor: Editor, documentName: string, pos: EditorPosition): GeneratorName {
-
-    // Go back from the position to find the first heading (or document title).
-    // This gives the name of the generator
-
-    let line = pos.line
-
-    // Regexp matching header line, with capturing group for header name
-    const headerMatch = /^[^\S\r\n]*#+[ \t]+(\S.*)$/gm
-    
-    while(line >= 1) {
-        // Get line
-        const lineText = editor.getLine(line).trim()
-
-        // Run regexp
-        const headerMathResult = lineText.match(headerMatch)
-
-        // Check if we got a match
-        if (headerMathResult && headerMathResult.length > 0) {
-            // Ensure the header was not empty
-            const headerName = headerMathResult[1]?.trim() || ""
-            if (headerName.length > 0) {
-
-                // Return name
-                return {name: headerName, nameLine: line}
-            }
-        }
-
-        // Back one line
-        line--
-    }
-
-    // Return document title if no header found
-    return {name: documentName, nameLine: 0}
-}
-
+import RandomGenerator, { EMPTY_GENERATOR } from "./RandomTable"
+import { KEYWORD_END_BRACKET, KEYWORD_END_BRACKET_ESCAPED, KEYWORD_START_BRACKET, KEYWORD_START_BRACKET_ESCAPED, RANDOM_RESULT_KEYWORD, RANDOM_TABLE_KEYWORD } from "./settings"
 
 /**
  * Generates random entry based on random table at specified location.
@@ -57,10 +14,19 @@ export default function generateRandomResult(editor: Editor, line: number, searc
 
     // Go back (or forward if specified) from line until first random generator entry is encountered
     // (if none is, go forward (or back) instead until random generator is encountered, otherwise abort)
-    // TODO
+    const randomEntry = findNext(RANDOM_TABLE_KEYWORD, line, editor, RANDOM_RESULT_KEYWORD, searchForward)
+    if (!randomEntry) {
+        console.log("No random header found, line was " + line)
+        return // No random table found at this position
+    }
 
     // Extract random generation parameters
-    // TODO
+    const parameterText = randomEntry.parameters
+    console.log("Params " + parameterText)
+
+    // Parse generator
+    const wholeFile = false
+    const generator = readRandomGenerator(line - 1, editor, wholeFile)
 
     // Go back from random generator entry until a list, table, or paragraph is found.
     // Parse it as a random table (or random generator text).
@@ -78,21 +44,20 @@ export default function generateRandomResult(editor: Editor, line: number, searc
     //       add it elsewhere as well.
     // TODO: Change the random generator button to have a previous button as well?  Or use undo?
 
-    const existingEndMarker = findNext(RANDOM_RESULT_KEYWORD, line, editor, RANDOM_TABLE_KEYWORD, true);
-    const postfix = existingEndMarker ? "\n" : "\n{"+RANDOM_RESULT_KEYWORD + "}\n"
+    const existingEndMarker = findNext(RANDOM_RESULT_KEYWORD, line + 1, editor, RANDOM_TABLE_KEYWORD, true);
+    const postfix = existingEndMarker ? "\n" : "\n" + KEYWORD_START_BRACKET + RANDOM_RESULT_KEYWORD + KEYWORD_END_BRACKET + "\n"
 
-    const generatedResult = "Test result\nnumber: " + (count++) + postfix
+    const seed = null
+    const parameters: Map<string, string> = new Map()
+    const generatedResult = generator.generate(seed, parameters) + postfix
 
-    const pos: EditorPosition = {line:line, ch:0};
+    const pos: EditorPosition = {line:line + 1, ch:0};
     const endPos: EditorPosition = existingEndMarker ? {line:existingEndMarker.line, ch:0} : pos;
 
     editor.replaceRange(generatedResult, pos, endPos)
     editor.scrollIntoView({from: pos, to: endPos})
 
 }
-
-// DEBUG
-let count = 1
 
 
 
@@ -113,14 +78,14 @@ export function saveRandomResult(editor: Editor, line: number) {
 
 function findNext(bracketedKeyword: string, startLine: number, editor: Editor, stopBeforeKeyword: string | null = null, forward:boolean = true): {line:number, parameters: string} | null {
     
-    const regExp = new RegExp("\{[^\S\r\n]*"+bracketedKeyword+"([^\r\n]*)\}", "gi");
+    const regExp = new RegExp(KEYWORD_START_BRACKET_ESCAPED + bracketedKeyword + "([^\r\n]*)" + KEYWORD_END_BRACKET_ESCAPED, "i");
 
-    const stopBeforeExp = new RegExp("\{[^\S\r\n]*"+stopBeforeKeyword+"([^\r\n]*)\}", "gi");
+    const stopBeforeExp = new RegExp(KEYWORD_START_BRACKET_ESCAPED + stopBeforeKeyword + "([^\r\n]*)" + KEYWORD_END_BRACKET_ESCAPED, "i");
 
     let line = startLine
     const delta = forward ? 1 : -1
     const lineCount = editor.lineCount()
-    while(line > 0 && line <= lineCount) {
+    while(line >= 0 && line < lineCount) {
         // Get line
         const lineText = editor.getLine(line).trim()
 
@@ -144,4 +109,89 @@ function findNext(bracketedKeyword: string, startLine: number, editor: Editor, s
     }
 
     return null
+}
+
+
+
+function readRandomGenerator(endLine: number, editor: Editor, wholeFile: boolean = false): RandomGenerator {
+
+    if (endLine < 0) return EMPTY_GENERATOR
+
+    function isListLine(s: string): boolean {
+        const t = s.trimStart()
+        return t.startsWith("- ") || t.startsWith("* ") || t.startsWith("+ ")
+    }
+
+    function isTableLine(s: string): boolean {
+        const t = s.trimStart()
+        return t.startsWith("|")
+    }
+
+    function isTextBlock(s: string): boolean {
+        const t = s.trim()
+        return t.length > 0 && 
+            !t.startsWith("#")
+    }
+
+    function isRandomTableKeyword(s: string): boolean {
+        const t = s.trimStart()
+        return t.startsWith(KEYWORD_START_BRACKET + RANDOM_TABLE_KEYWORD) ||
+            t.startsWith(KEYWORD_START_BRACKET + RANDOM_RESULT_KEYWORD)
+    }
+
+    type RandomTableDataType = "list" | "table" | "text"
+
+    function lineType(line: number): RandomTableDataType | "empty" | null {
+        const s = editor.getLine(line)
+        if (isRandomTableKeyword(s)) return null
+        else if (isListLine(s)) return "list"
+        else if (isTableLine(s)) return "table"
+        else if (isTextBlock(s)) return "text"
+        else if (s.trim().length <= 0) return "empty"
+        else return null
+    }
+
+
+    let tableData: string[] = []
+
+    // If parameter 'whole file' is given, parse everything above as a random generator
+    let startLine = 0
+
+    if (!wholeFile) {
+        // Look at previous non-empty line.
+        // If it is a list, move up through all lines starting with list bullet, and parse them as a list table
+        startLine = endLine
+
+        // Jump over directly preceeding empty or header lines
+        while (lineType(startLine) == "empty" && startLine > 0) {
+            startLine--
+            endLine--
+        }
+
+        let t = lineType(startLine)
+        if (t == "empty" || t == null) {
+            // If there was no random table data, return an empty generator
+            return EMPTY_GENERATOR
+        }
+        else {
+            // Gather all lines of the same type
+            while (lineType(startLine) == t && startLine > 0) startLine--
+            startLine++
+        }
+    }
+
+    // Gather data
+    for (let line = startLine; line <= endLine; line++) {
+        tableData.push(editor.getLine(line))
+    }
+
+    console.log("Generator data:\n" + tableData.join("\n"))
+
+    // (literal text until selection brackets, then entries are separated with ; 
+    //  this allows generating larger chunks containing lists and such, but probably requires
+    //  more robust table start, end and separator markers.  Perhaps %{  ;  }% or somesuch,
+    //  but ideally just allow specifying them.  Looks like basic obsidian or dataview don't use {} )
+
+
+    return EMPTY_GENERATOR
 }
