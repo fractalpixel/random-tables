@@ -1,4 +1,4 @@
-import { Editor, EditorPosition, EditorRange } from "obsidian"
+import { Editor, EditorPosition } from "obsidian"
 import { RANDOM_RESULT_KEYWORD, RANDOM_TABLE_KEYWORD } from "./editor-buttons"
 
 interface GeneratorName {
