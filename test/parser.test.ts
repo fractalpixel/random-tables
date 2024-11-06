@@ -16,6 +16,10 @@ test("constant generator generates value", () => {
 })
 
 
+test("generator parser parses constant", () => {
+    expect(parseGenerator("foo bar")).toEqual(new ConstantGenerator("foo bar"))
+})
+
 test("generator parser parses bracket list", () => {
     expect(parseGenerator("{a;b}")).toEqual(new TableGenerator(["a", "b"]))
 })
