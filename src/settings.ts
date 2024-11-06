@@ -1,6 +1,31 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import RandomTablesPlugin from "./main";
 
+export const KEYWORD_START_BRACKET = "{"
+export const KEYWORD_END_BRACKET = "}"
+
+export const KEYWORD_START_BRACKET_ESCAPED = escapeRegex(KEYWORD_START_BRACKET)
+export const KEYWORD_END_BRACKET_ESCAPED = escapeRegex(KEYWORD_END_BRACKET)
+
+/**
+ * Keyword used to indicate a random table.  Must be endclosed in brackets {}
+ */
+export const RANDOM_TABLE_KEYWORD = "RandomTable"
+
+/**
+ * Keyword used to indicate end of a generated result.  Must be endclosed in brackets {}
+ */
+export const RANDOM_RESULT_KEYWORD = "RandomResult"
+
+/**
+ * How close the cursor (or a selection) will have to be to the random generation button before we hide it.
+ * 0 is right next to it, 1 is one character distant, etc.
+ */
+export const HIDE_BUTTON_MARGIN = 0;
+
+
+
+
 /**
  * Settings for the Random Generator plugin.
  */
@@ -42,3 +67,15 @@ export class RandomGeneratorSettingTab extends PluginSettingTab {
 				}));
 	}
 }
+
+
+
+
+/** 
+ * Escape some string so that it can be macthed literally by a regexp
+ * From https://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
+ */
+function escapeRegex(s: string) {
+    return s.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
+}
+

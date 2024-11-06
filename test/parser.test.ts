@@ -1,4 +1,6 @@
-import {ConstantGenerator, parseGenerator, TableGenerator} from "../src/generatorParser"
+import ConstantGenerator from "../src/generator/ConstantGenerator"
+import TableGenerator from "../src/generator/TableGenerator"
+import {parseGenerator} from "../src/generator/generator-parser"
 
 test('parser parses empty string', () => {
     expect(parseGenerator("")).toEqual(new ConstantGenerator())
@@ -15,5 +17,5 @@ test("constant generator generates value", () => {
 
 
 test("generator parser parses bracket list", () => {
-    expect(parseGenerator("{a,b}")).toEqual(new TableGenerator(["a", "b"]))
+    expect(parseGenerator("{a;b}")).toEqual(new TableGenerator(["a", "b"]))
 })
