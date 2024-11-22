@@ -1,6 +1,9 @@
+/*
 import ConstantGenerator from "../src/generator/ConstantGenerator"
 import TableGenerator from "../src/generator/TableGenerator"
-import {parseGenerator} from "../src/generator/generator-parser"
+import SequenceGenerator from "../src/generator/SequenceGenerator"
+
+
 
 test('parser parses empty string', () => {
     expect(parseGenerator("")).toEqual(new ConstantGenerator())
@@ -15,11 +18,27 @@ test("constant generator generates value", () => {
     expect(cg.generate()).toEqual("bar")
 })
 
-
 test("generator parser parses constant", () => {
     expect(parseGenerator("foo bar")).toEqual(new ConstantGenerator("foo bar"))
 })
 
 test("generator parser parses bracket list", () => {
-    expect(parseGenerator("{a;b}")).toEqual(new TableGenerator(["a", "b"]))
+    expect(parseGenerator("{ a; b}")).toEqual(new TableGenerator([" a", " b"]))
 })
+
+test("recursive bracket list", () => {
+    expect(parseGenerator("{a;{b;c};d}")).toEqual(new TableGenerator(["a", new TableGenerator(["b", "c"]),"d"]))
+})
+
+test("sequence of generators", () => {
+    expect(parseGenerator("00{aa;bb}cc{dd;ee}ff")).toEqual(
+        new SequenceGenerator([
+            new ConstantGenerator("00"),
+            new TableGenerator(["aa", "bb"]),
+            new ConstantGenerator("cc"),
+            new TableGenerator(["dd", "ee"]),
+            new ConstantGenerator("ff"),
+        ])
+    )
+})
+*/

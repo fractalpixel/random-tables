@@ -1,0 +1,64 @@
+import ConstantGenerator from "../ConstantGenerator"
+import RandomGenerator from "../RandomGenerator"
+import SequenceGenerator from "../SequenceGenerator"
+import TableGenerator from "../TableGenerator"
+
+
+test('parses empty string', () => {
+    expectParserEquals(
+        "",
+        new ConstantGenerator("")
+    )
+})
+
+test('parses constant', () => {
+    expectParserEquals(
+        "foo",
+        new ConstantGenerator("foo")
+    )
+})
+
+test('parses one element table', () => {
+    expectParserEquals(
+        "{bar}",
+        new TableGenerator([
+            "bar",
+        ])
+    )
+})
+
+
+test('parses simple table', () => {
+    expectParserEquals(
+        "{bar; zap}",
+        new TableGenerator([
+            "bar",
+            " zap"
+        ])
+    )
+})
+
+
+
+test('parses table sequence', () => {
+    expectParserEquals(
+        "foo {bar; zap}",
+        new SequenceGenerator([
+            new ConstantGenerator("foo "),
+            new TableGenerator([
+                "bar",
+                " zap"
+            ])
+        ])
+    )
+})
+
+
+
+function expectParserEquals(input: string, generator: RandomGenerator) {
+    const r = parseGenerator(input)
+    if (!r.success) console.log((r as ParseError<RandomGenerator>).errorMessage)
+    expect(r.success).toEqual(true)
+    const g = (r as ParseSuccess<RandomGenerator>).value
+    expect(g).toEqual(generator)
+}

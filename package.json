@@ -26,7 +26,7 @@
 		"typescript": "4.7.4"
 	},
 	"dependencies": {
-		"codemirror": "^6.0.1",
-		"tspc": "^1.1.2"
+		"@nrsk/sigma": "^3.8.0",
+		"codemirror": "^6.0.1"
 	}
 }
