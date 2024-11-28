@@ -5,14 +5,14 @@
 
 ## Implement next
 
- - Linearily weighted table generator
- - Custom weighted table generator
- - Gaussian / exponential weighted table generator
-
+- Linearily weighted table generator
+- Custom weighted table generator
+- Gaussian / exponential weighted table generator
+- Add test that parses input and verifies generated output 
 
 ## Implemented
 
- - Table generator
- - Sequantial generator
- - Constant generator
- - Mock random
+- Table generator
+- Sequantial generator
+- Constant generator
+- Mock random
