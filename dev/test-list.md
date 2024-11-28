@@ -5,10 +5,14 @@
 
 ## Implement next
 
- - Mock random
- - Sequantial generator
- - Constant generator
- - Table generator
+ - Linearily weighted table generator
+ - Custom weighted table generator
+ - Gaussian / exponential weighted table generator
 
 
 ## Implemented
+
+ - Table generator
+ - Sequantial generator
+ - Constant generator
+ - Mock random

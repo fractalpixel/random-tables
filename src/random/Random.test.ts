@@ -11,7 +11,7 @@ test('Statistical test of seed random', () => {
     const runs = 10000
     // Collect rolls
     for (let i = 0; i < runs; i++) {
-        const r = Math.round(rng.nextGaussian(3))
+        const r = Math.round(rng.gaussian(3))
         if (r >= -range && r <= range) results[r + range]!++;
     }
 

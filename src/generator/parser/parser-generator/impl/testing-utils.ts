@@ -1,4 +1,4 @@
-import { test, expect } from "vitest";
+import { expect } from "vitest";
 import { ParseResult } from "./ParseResult";
 
 // Utility functions used by tests

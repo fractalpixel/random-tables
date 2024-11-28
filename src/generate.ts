@@ -50,7 +50,7 @@ export default function generateRandomResult(editor: Editor, line: number, searc
     const existingEndMarker = findNext(RANDOM_RESULT_KEYWORD, line + 1, editor, RANDOM_TABLE_KEYWORD, true);
     const postfix = existingEndMarker ? "\n" : "\n" + KEYWORD_START_BRACKET + RANDOM_RESULT_KEYWORD + KEYWORD_END_BRACKET + "\n"
 
-    const seed = null
+    const seed = undefined
     const parameters: Map<string, string> = new Map()
     const generatedResult = generator.generate(seed, parameters) + postfix
 

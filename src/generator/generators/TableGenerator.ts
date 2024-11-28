@@ -1,3 +1,4 @@
+import { Random } from "src/random/Random";
 import ConstantGenerator from "./ConstantGenerator";
 import RandomGenerator from "./RandomGenerator";
 
@@ -7,19 +8,29 @@ import RandomGenerator from "./RandomGenerator";
  * 
  * The elements can be random generators as well.
  */
-export default class TableGenerator implements RandomGenerator {
+export default class TableGenerator extends RandomGenerator {
 
     // @ts-ignore
     private entries: RandomGenerator[] = []
 
     constructor(entries: (RandomGenerator|string)[]) {
+        super()
         this.entries = entries.map((s) => {
             if (typeof s == 'string') return new ConstantGenerator(s)
             else return s
         } )
     }
 
-    generate(seed: string | null = null, parameters: Map<string, string> = new Map()): string {
-        return "";
+    protected override doGenerate(random: Random, parameters: Map<string, string>): string {
+
+        const entryCount = this.entries.length
+
+        // Handle case of no entries
+        if (entryCount <= 0) return ""
+
+        // Select a random entry
+        const selectedEntry = random.intRange(0, entryCount-1)
+
+        return this.entries[selectedEntry]!.generate(random, parameters);
     }
 }

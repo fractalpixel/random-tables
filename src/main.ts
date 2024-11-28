@@ -5,7 +5,6 @@ import { randomButtonsForEditorPlugin } from './editor-buttons';
 import { DEFAULT_SETTINGS, RandomGeneratorSettingTab, RandomTablesPluginSettings } from './settings';
 import generateRandomResult, { saveRandomResult } from "./generate"
 
-import SeedRandomImpl from "./random/SeedRandomImpl"
 
 
 // Hacky global context for communicating with code mirror plugin
