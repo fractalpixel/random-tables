@@ -1,3 +1,4 @@
+import { test } from "vitest";
 import { expectSuccess } from "../testing-utils";
 import { token } from "./token";
 import { opt, optOrElse } from "./opt";

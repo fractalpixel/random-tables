@@ -1,3 +1,4 @@
+import { test } from "vitest";
 import { expectFailure, expectSuccess } from "../testing-utils";
 import { regExp } from "./regExp";
 

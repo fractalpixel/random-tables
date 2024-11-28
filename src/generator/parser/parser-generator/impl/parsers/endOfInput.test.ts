@@ -1,3 +1,5 @@
+import { test } from "vitest";
+
 import { expectFailure, expectSuccess } from "../testing-utils";
 import { endOfInput } from "./endOfInput";
 

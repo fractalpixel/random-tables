@@ -1,6 +1,8 @@
+# Features
 
+## Planned for later
 
-# Interface
+### Interface
 - Add back button to Generate button, which generates the previous result (save current random seed when generating a result)
 - Add clear button to Save Result?  Perhaps not too often needed feature.  Could also be in generate button row.  Could clear away the save button as well.
 - Add copy action to save button row?
@@ -10,7 +12,7 @@
     - Test in light mode.
     - Ideally adapt the colors to light or dark mode (hard to adapt to specific themes, perhaps if we could query the background color)
 
-# Functionality
+### Functionality
 - Random generator settings
     - Probability curve (flat, normal distr, linear, exponential)
         - The average should be around one, so that it's easy to specify custom weights as needed for individual entries (if entries are formatted as table with weight column - empty weight uses default).
@@ -32,3 +34,12 @@
         - Parameters could also be numerical values that are set, and that the table weight expressions use when evaluating themselves.
         - A generator could use a parameter directly as a value as well (string insertion)
         - Weight expressions might also match strings and such?
+
+
+## Implement next
+
+- Parse block generator.
+- Implement generators
+
+
+## Implemented

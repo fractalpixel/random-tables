@@ -1,7 +1,7 @@
-import ConstantGenerator from "../ConstantGenerator";
-import RandomGenerator from "../RandomGenerator";
-import SequenceGenerator from "../SequenceGenerator";
-import TableGenerator from "../TableGenerator";
+import ConstantGenerator from "../generators/ConstantGenerator";
+import RandomGenerator from "../generators/RandomGenerator";
+import SequenceGenerator from "../generators/SequenceGenerator";
+import TableGenerator from "../generators/TableGenerator";
 import * as P from "./parser-generator/parser-generator"
 
 

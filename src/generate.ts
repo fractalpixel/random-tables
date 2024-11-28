@@ -1,8 +1,8 @@
 import { Editor, EditorPosition } from "obsidian"
-import { EMPTY_STRING_GENERATOR } from "./generator/EmptyStringGenerator"
+import { EMPTY_STRING_GENERATOR } from "./generator/generators/EmptyStringGenerator"
 import { KEYWORD_END_BRACKET, KEYWORD_END_BRACKET_ESCAPED, KEYWORD_START_BRACKET, 
          KEYWORD_START_BRACKET_ESCAPED, RANDOM_RESULT_KEYWORD, RANDOM_TABLE_KEYWORD } from "./settings"
-import RandomGenerator from "./generator/RandomGenerator"
+import RandomGenerator from "./generator/generators/RandomGenerator"
 
 
 

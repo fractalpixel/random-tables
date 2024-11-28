@@ -1,3 +1,4 @@
+import { test } from "vitest";
 import { expectFailure, expectSuccess } from "../testing-utils";
 import { lazy } from "./lazy";
 import { Parser } from "../Parser";

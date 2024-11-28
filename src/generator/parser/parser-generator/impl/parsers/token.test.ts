@@ -1,3 +1,4 @@
+import { test } from "vitest";
 import { token } from "./token";
 import { expectFailure, expectSuccess } from "../testing-utils";
 
