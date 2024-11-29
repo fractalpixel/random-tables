@@ -1,4 +1,4 @@
-import { test } from "vitest";
+import { expect, test } from "vitest";
 import { token } from "../parser-generator";
 import { expectFailure, expectSuccess } from "./testing-utils";
 
@@ -14,4 +14,11 @@ test("Skip then keep", () => {
 
     expectSuccess(p.parse("foobar"), "bar", 6)
     expectFailure(p.parse("foo"), 3)
+})
+
+test("Named", () => {
+    const p = token("foo").named("foo parser")
+    expect(p.name).toEqual("foo parser")
+    expectSuccess(p.parse("foobar"), "foo", 3)
+    expectFailure(p.parse("zip"), 0)
 })

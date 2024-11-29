@@ -30,7 +30,7 @@ const whiteSpace = P.regExp(/\s*/)
 
 
 // Possibly decimal number (no exponents though)
-const number = P.regExp(/\d+(\.\d+)?/).map((s) => parseFloat(s))
+const number = P.regExp(/\d+(\.\d+)?/).map((s) => parseFloat(s)).named("number")
 
 const inlineTable = P.lazy<RandomGenerator>()
 const textInsideInlineBlock = P.until1(P.alt(INLINE_START, INLINE_END, INLINE_SEPARATOR)).map((s) => consGen(s))
@@ -38,19 +38,27 @@ const insideInlineBlockSequence = P.rep(P.alt(inlineTable, textInsideInlineBlock
 
 const tableEntry = P.opt(
     whiteSpace.skipThenKeep(number.keepThenSkip(whiteSpace.then(WEIGHT_SEPARATOR)))
-).then(insideInlineBlockSequence.orElse(consGen())).map(([weight, entry]) => new TableEntry(weight, entry))
+).then(insideInlineBlockSequence.orElse(consGen())).map(([weight, entry]) => new TableEntry(weight, entry)).named("table entry")
 
-inlineTable.setParser(P.surroundedBy(
-    INLINE_START, 
-    P.sep(
-        tableEntry, 
-        INLINE_SEPARATOR
-    ).map((v) => tableGen(v)), 
-    INLINE_END)
+inlineTable.setParser(
+    P.surroundedBy(
+        INLINE_START, 
+        P.sep(
+            tableEntry, 
+            INLINE_SEPARATOR
+        ).map((v) => tableGen(v)), 
+        INLINE_END
+    ).named("inline table")
 )
 
 const textOutsideInlineBlock = P.until1(INLINE_START).map((s) => consGen(s))
-const inlineBlockParser = P.rep(P.alt(inlineTable, textOutsideInlineBlock)).map((v) => seqGen(v)).followedBy(P.endOfInput())
+const inlineBlockParser = 
+    P.rep(
+        P.alt(inlineTable, textOutsideInlineBlock)).map((v) => seqGen(v)
+    )
+    .named("sequence of random tables and text")
+    .followedBy(P.endOfInput()
+)
 
 
 

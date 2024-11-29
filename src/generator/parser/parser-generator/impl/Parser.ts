@@ -16,7 +16,7 @@ export abstract class Parser<T> {
     /**
      * @param name User readable name of this parser, for error reporting.
      */
-    constructor(public name: string | undefined = undefined) {}
+    constructor(public name: string | undefined = undefined) { }
 
     /**
      * Parse the specified input (optionally starting at the specified position), returning a ParseResult with the parsed value, or an error message.
@@ -25,13 +25,12 @@ export abstract class Parser<T> {
         return this.doParse(input, startPos)
     }
 
-
     /**
      * Returns this parser renamed to the specified name.
      * Useful for more readable error messages.
      */
     named(name: string): Parser<T> {
-        return parser(this.doParse, name)
+        return new NamedParser(this, name)
     }
 
     /**
@@ -161,7 +160,7 @@ export abstract class Parser<T> {
     /**
      * Should be implemented by inheritors.  Does the actual parsing for this parser.
      */
-    abstract doParse(input: string, startPos: number): ParseResult<T>    
+    abstract doParse(input: string, startPos: number): ParseResult<T>
 }
 
 
@@ -174,7 +173,7 @@ export class ParserFun<T> extends Parser<T> {
     }
 
     doParse(input: string, startPos: number): ParseResult<T> {
-        return this.f(input, startPos)        
+        return this.f(input, startPos)
     }
 }
 
@@ -183,4 +182,15 @@ export class ParserFun<T> extends Parser<T> {
  */
 export function parser<T>(f: (input: string, startPos: number) => ParseResult<T>, name: string | undefined = undefined): Parser<T> {
     return new ParserFun(f, name)
+}
+
+
+export class NamedParser<T> extends Parser<T> {
+    constructor(private delegate: Parser<T>, name: string) {
+        super(name)
+    }
+
+    override doParse(input: string, startPos: number): ParseResult<T> {
+        return this.delegate.doParse(input, startPos)
+    }
 }
