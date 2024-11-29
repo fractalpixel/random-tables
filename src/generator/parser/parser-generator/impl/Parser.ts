@@ -77,6 +77,22 @@ export abstract class Parser<T> {
     }
 
     /**
+     * Returns a parser that matches and returns the result of this parser and then 
+     * reads the content of the second parser without returning them.
+     */
+    keepThenSkip<S>(other: Parser<S>): Parser<T> {
+        return seq(this, other).map((v) => v[0])
+    }
+
+    /**
+     * Returns a parser that matches and skips the result of this parser and then 
+     * reads the content of the second parser and returns it as the parse result.
+     */
+    skipThenKeep<S>(other: Parser<S>): Parser<S> {
+        return seq(this, other).map((v) => v[1])
+    }
+
+    /**
      * Returns a parser that matches this content surrounded by the specified prefix and postfix.
      */
     surroundedBy(prefix: Parser<any>, postfix: Parser<any>): Parser<T> {

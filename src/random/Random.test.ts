@@ -1,5 +1,6 @@
 import { test, expect } from "vitest";
 import SeedRandomImpl from "./SeedRandomImpl"
+import MockRandom from "./MockRandom";
 
 test('Statistical test of seed random', () => {
     const rng = new SeedRandomImpl()
@@ -28,5 +29,17 @@ test('Statistical test of seed random', () => {
     // Assert that center has more hits than edges
     expect(results[0]).toBeLessThan(results[range]!)
     expect(results[2*range]).toBeLessThan(results[range]!)
+
+})
+
+test("Test mock random", () => {
+    const mr = new MockRandom(9)
+    expect(mr.float()).toEqual(9)
+    expect(mr.float0to1()).toEqual(9)
+    expect(mr.floatRange(-100, 100)).toEqual(9)
+    expect(mr.int(100)).toEqual(9)
+    expect(mr.intRange(-100, 100)).toEqual(9)
+    expect(mr.gaussian()).toEqual(9)
+    expect(mr.newRandom().gaussian()).toEqual(9)
 
 })

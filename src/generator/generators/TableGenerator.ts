@@ -10,27 +10,49 @@ import RandomGenerator from "./RandomGenerator";
  */
 export default class TableGenerator extends RandomGenerator {
 
-    // @ts-ignore
-    private entries: RandomGenerator[] = []
+    private entries: TableEntry[] = []
 
-    constructor(entries: (RandomGenerator|string)[]) {
+    constructor(entries: (TableEntry|RandomGenerator|string)[]) {
         super()
-        this.entries = entries.map((s) => {
-            if (typeof s == 'string') return new ConstantGenerator(s)
-            else return s
+
+        // Convert entries to weight and generator pairs
+        this.entries = entries.map((e) => {
+            if (typeof e == 'string') 
+                return new TableEntry(undefined, new ConstantGenerator(e))
+            else if (e instanceof RandomGenerator) 
+                return new TableEntry(undefined, e)
+            else 
+                return e
         } )
     }
 
     protected override doGenerate(random: Random, parameters: Map<string, string>): string {
 
-        const entryCount = this.entries.length
+        const defaultWeight = 1
 
-        // Handle case of no entries
-        if (entryCount <= 0) return ""
+        // Determine total weight
+        const totalWeight = this.entries.reduce<number>((sum, entry) => sum + Math.max(entry.weight || defaultWeight, 0), 0)
+
+        // Handle case of no total weight (no entries or all zero or negative weight)
+        if (totalWeight <= 0) return ""
 
         // Select a random entry
-        const selectedEntry = random.intRange(0, entryCount-1)
+        const randomWeightPos = random.floatRange(0, totalWeight)
 
-        return this.entries[selectedEntry]!.generate(random, parameters);
+        // Find and return the entry
+        let weightEnd = 0
+        for (let entry of this.entries) {
+            weightEnd += entry.weight || defaultWeight
+            if (randomWeightPos <= weightEnd)
+                return entry.value.generate(random, parameters)
+        }
+
+        // If we get here there was a rounding error or the algorithm is broken.
+        // We'll assume the former (as we try to test for the latter) and return the last entry
+        return this.entries[this.entries.length-1]!.value.generate(random, parameters)
     }
+}
+
+export class TableEntry {
+    constructor(public readonly weight: number | undefined, public readonly value: RandomGenerator) {}
 }

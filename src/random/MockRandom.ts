@@ -14,9 +14,24 @@ export default class MockRandom extends Random {
         return this.randomValue
     }
 
+
+    override float(upperLimit: number = 1): number {
+        return this.randomValue
+    }
+
+    override floatRange(min: number, maxExclusive: number): number {
+        return this.randomValue
+    }
+
+
     override float0to1(): number {
         return this.randomValue
     }
+
+    override gaussian(stdDev: number = 1, mean: number = 0): number {
+        return this.randomValue
+    }
+
 
     override newRandom(): Random {
         return new MockRandom(this.randomValue)

@@ -4,6 +4,7 @@ import { regExp } from "./regExp";
 
 test("Regexp matching", () => {
     const p = regExp(/(ab)+/i)
+    expectFailure(p.parse(" ab"), 0)
     expectFailure(p.parse("aa"), 0)
     expectFailure(p.parse(""), 0)
     expectFailure(p.parse("cab"), 0)

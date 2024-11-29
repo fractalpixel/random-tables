@@ -3,7 +3,7 @@ import { test, expect } from "vitest";
 import ConstantGenerator from "../generators/ConstantGenerator"
 import RandomGenerator from "../generators/RandomGenerator"
 import SequenceGenerator from "../generators/SequenceGenerator"
-import TableGenerator from "../generators/TableGenerator"
+import TableGenerator, { TableEntry } from "../generators/TableGenerator"
 import { parseGenerator } from "./generator-parser"
 import { ParseResult } from "./parser-generator/parser-generator"
 
@@ -40,16 +40,17 @@ test('parses simple table', () => {
     )
 })
 
-
-
-test('parses table sequence', () => {
+test('parses table with custom weights', () => {
     expectParserEquals(
-        "foo {bar; zap}",
+        `foo {  
+        6  :bar;
+          2  :zap; mip}`,
         new SequenceGenerator([
             new ConstantGenerator("foo "),
             new TableGenerator([
-                "bar",
-                " zap"
+                new TableEntry(6, new ConstantGenerator("bar")),
+                new TableEntry(2, new ConstantGenerator("zap")),
+                new TableEntry(undefined, new ConstantGenerator(" mip")),
             ])
         ])
     )
