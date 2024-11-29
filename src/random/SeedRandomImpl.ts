@@ -1,12 +1,15 @@
+import PRNG from "random-seedable/@types/PRNG";
 import { Random } from "./Random";
 import * as rng from "random-seedable";
 
 export default class SeedRandomImpl extends Random {
-    private rng = new rng.XORShift128Plus()    
+    private rng: PRNG
 
     constructor(seed: number | undefined = undefined) {
         super()
-        this.rng.seed = seed || Date.now()
+        const s0 = seed || Date.now()
+        // TODO: We should run s0 through a hash function, but in lack of better fudge around with it:
+        this.rng = new rng.XORShift64(s0 * 137 + 231 + s0)
     }
 
     override intRange(min: number, max: number): number {

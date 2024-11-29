@@ -3,6 +3,9 @@ import { EMPTY_STRING_GENERATOR } from "./generator/generators/EmptyStringGenera
 import { KEYWORD_END_BRACKET, KEYWORD_END_BRACKET_ESCAPED, KEYWORD_START_BRACKET, 
          KEYWORD_START_BRACKET_ESCAPED, RANDOM_RESULT_KEYWORD, RANDOM_TABLE_KEYWORD } from "./settings"
 import RandomGenerator from "./generator/generators/RandomGenerator"
+import { parseGenerator } from "./generator/parser/generator-parser"
+import ConstantGenerator from "./generator/generators/ConstantGenerator"
+import SeedRandomImpl from "./random/SeedRandomImpl"
 
 
 
@@ -50,9 +53,10 @@ export default function generateRandomResult(editor: Editor, line: number, searc
     const existingEndMarker = findNext(RANDOM_RESULT_KEYWORD, line + 1, editor, RANDOM_TABLE_KEYWORD, true);
     const postfix = existingEndMarker ? "\n" : "\n" + KEYWORD_START_BRACKET + RANDOM_RESULT_KEYWORD + KEYWORD_END_BRACKET + "\n"
 
-    const seed = undefined
+    const seed = Date.now()
+    const random = new SeedRandomImpl(seed)
     const parameters: Map<string, string> = new Map()
-    const generatedResult = generator.generate(seed, parameters) + postfix
+    const generatedResult = generator.generate(random, parameters) + postfix
 
     const pos: EditorPosition = {line:line + 1, ch:0};
     const endPos: EditorPosition = existingEndMarker ? {line:existingEndMarker.line, ch:0} : pos;
@@ -190,11 +194,23 @@ function readRandomGenerator(endLine: number, editor: Editor, wholeFile: boolean
 
     console.log("Generator data:\n" + tableData.join("\n"))
 
+    const result = parseGenerator(tableData.join("\n"))
+    let generator = new ConstantGenerator("")
+    if (result.isError()) {
+        // TODO: Handle / show error
+        console.log(result.error)
+        generator = new ConstantGenerator("Problem when reading random generator:\n" + result.error)
+    }
+    else {
+        generator = result.value
+    }
+        
+
     // (literal text until selection brackets, then entries are separated with ; 
     //  this allows generating larger chunks containing lists and such, but probably requires
     //  more robust table start, end and separator markers.  Perhaps %{  ;  }% or somesuch,
     //  but ideally just allow specifying them.  Looks like basic obsidian or dataview don't use {} )
 
 
-    return EMPTY_STRING_GENERATOR
+    return generator
 }

@@ -2,6 +2,8 @@
 
 ## Planned for later
 
+- The seed-random library doesn't expand the provided seed to initialize the random generators properly, resulting in looping/small range outputs.  Implement an own random generator using one of the algorithms (e.g. xorwow), and various utility functions for it.
+
 ### Interface
 - Add back button to Generate button, which generates the previous result (save current random seed when generating a result)
 - Add clear button to Save Result?  Perhaps not too often needed feature.  Could also be in generate button row.  Could clear away the save button as well.

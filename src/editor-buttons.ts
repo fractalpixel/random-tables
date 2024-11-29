@@ -58,12 +58,14 @@ class ButtonWidget extends WidgetType {
 			}
         })
 
+		/* It's distracting
 		// Add tooltip to buttons
 		// TODO: Exact tooltip content
 		const tooltip = this.buttonType == "RandomGenerationButton" ?
 			"Generate next random result from the table above":
 			"Save this random result below";
 		button.setAttribute("aria-label", tooltip)
+		*/
 
 		return button;
 	}
