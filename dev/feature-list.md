@@ -3,6 +3,7 @@
 ## Planned for later
 
 - The seed-random library doesn't expand the provided seed to initialize the random generators properly, resulting in looping/small range outputs.  Implement an own random generator using one of the algorithms (e.g. xorwow), and various utility functions for it.
+- Should we use e.g. ":" to indicate that the following char is a distribution selector in table blocks?
 
 ### Interface
 - Add back button to Generate button, which generates the previous result (save current random seed when generating a result)

@@ -3,7 +3,7 @@ import { test, expect } from "vitest";
 import ConstantGenerator from "../generators/ConstantGenerator"
 import RandomGenerator from "../generators/RandomGenerator"
 import SequenceGenerator from "../generators/SequenceGenerator"
-import TableGenerator, { TableEntry } from "../generators/TableGenerator"
+import TableGenerator, { FlatWeightDistribution, LinearWeightDistribution, TableEntry } from "../generators/TableGenerator"
 import { parseGenerator } from "./generator-parser"
 import { ParseResult } from "./parser-generator/parser-generator"
 
@@ -88,6 +88,30 @@ test('parses nested table sequence', () => {
             new ConstantGenerator("fii")
         ])
     )
+})
+
+
+test("Linear probability table", () => {
+    expectParserEquals("{-a;b;c}",
+        new TableGenerator(["a", "b", "c"], new LinearWeightDistribution())
+    )
+
+    expectParserEquals("{-(10)a;b;c}",
+        new TableGenerator(["a", "b", "c"], new LinearWeightDistribution(), 10)
+    )
+
+    expectParserEquals("{- ( 10  )a;b;c}",
+        new TableGenerator(["a", "b", "c"], new LinearWeightDistribution(), 10)
+    )
+
+    expectParserEquals("{ -a;b;c}",
+        new TableGenerator([" -a", "b", "c"], FlatWeightDistribution)
+    )
+
+    expectParserEquals("{+a;b;c}",
+        new TableGenerator(["a", "b", "c"], new LinearWeightDistribution(true))
+    )
+
 })
 
 

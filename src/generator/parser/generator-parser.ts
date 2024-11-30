@@ -1,7 +1,7 @@
 import ConstantGenerator from "../generators/ConstantGenerator";
 import RandomGenerator from "../generators/RandomGenerator";
 import SequenceGenerator from "../generators/SequenceGenerator";
-import TableGenerator, { TableEntry } from "../generators/TableGenerator";
+import TableGenerator, { FlatWeightDistribution, LinearWeightDistribution, TableEntry, WeightDistribution } from "../generators/TableGenerator";
 import * as P from "./parser-generator/parser-generator"
 
 
@@ -14,10 +14,10 @@ function seqGen(gens: RandomGenerator[]): RandomGenerator {
     else if (gens.length == 1) return gens[0]!
     else return new SequenceGenerator(gens)
 }
-function tableGen(gens: TableEntry[]): RandomGenerator {
+function tableGen(gens: TableEntry[], distibution: WeightDistribution | undefined = undefined, distributionParam: number | undefined = undefined): RandomGenerator {
     if (gens.length <= 0) return consGen("")
     else if (gens.length == 1) return gens[0]?.value!
-    else return new TableGenerator(gens)
+    else return new TableGenerator(gens, distibution || FlatWeightDistribution, distributionParam)
 }
 
 
@@ -25,6 +25,11 @@ const INLINE_START = P.token("{")
 const INLINE_END = P.token("}")
 const INLINE_SEPARATOR = P.token(";")
 const WEIGHT_SEPARATOR = P.token(":")
+
+const TABLE_LINEARILY_DROPPING = P.token("-").mapTo(new LinearWeightDistribution())
+const TABLE_LINEARILY_INCREASING = P.token("+").mapTo(new LinearWeightDistribution(true))
+const TABLE_GAUSSIAN = P.token("~")
+
 
 const whiteSpace = P.regExp(/\s*/)
 
@@ -40,13 +45,25 @@ const tableEntry = P.opt(
     whiteSpace.skipThenKeep(number.keepThenSkip(whiteSpace.then(WEIGHT_SEPARATOR)))
 ).then(insideInlineBlockSequence.orElse(consGen())).map(([weight, entry]) => new TableEntry(weight, entry)).named("table entry")
 
+const tableProbabilityDistribution = 
+    P.alt(
+        TABLE_LINEARILY_DROPPING,
+        TABLE_LINEARILY_INCREASING
+    ).then(
+        P.opt(whiteSpace.skipThenKeep(
+            P.surroundedBy(P.token("("), P.surroundedBy(whiteSpace, number.named("probability distribution parameter"), whiteSpace), P.token(")")))
+        )
+    )
+
 inlineTable.setParser(
     P.surroundedBy(
         INLINE_START, 
-        P.sep(
-            tableEntry, 
-            INLINE_SEPARATOR
-        ).map((v) => tableGen(v)), 
+        P.opt(tableProbabilityDistribution).then(
+            P.sep(
+                tableEntry, 
+                INLINE_SEPARATOR
+            )
+        ).map(([distr, entries]) => tableGen(entries, distr?.[0], distr?.[1])), 
         INLINE_END
     ).named("inline table")
 )
