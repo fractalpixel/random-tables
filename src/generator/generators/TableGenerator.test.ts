@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import TableGenerator, { LinearWeightDistribution } from "./TableGenerator";
+import TableGenerator, { GaussianWeightDistribution, LinearWeightDistribution } from "./TableGenerator";
 import ConstantGenerator from "./ConstantGenerator";
 import MockRandom from "src/random/MockRandom";
 import { parseGenerator } from "../parser/generator-parser";
@@ -151,4 +151,28 @@ test('Linear weight distribution with custom parameter backwards', () => {
     rng.randomValue = 2*0.11
     expect(gen.generate(rng)).toEqual("b")
 
+})
+
+
+test('Gaussian weight distribution', () => {
+    const gen = new TableGenerator(["a", "b", "c"], new GaussianWeightDistribution())
+
+    const rng = new MockRandom(0)
+
+    rng.randomValue = 0
+    expect(gen.generate(rng)).toEqual("a")
+
+    rng.randomValue = 2*0.38 * 3
+    expect(gen.generate(rng)).toEqual("a")
+
+    rng.randomValue = 2*0.42 * 3
+    expect(gen.generate(rng)).toEqual("b")
+
+    rng.randomValue = 2*0.5 * 3
+    expect(gen.generate(rng)).toEqual("b")
+
+    rng.randomValue = 2*0.55 * 3
+    expect(gen.generate(rng)).toEqual("c")
+
+  
 })

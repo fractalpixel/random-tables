@@ -1,7 +1,7 @@
 import ConstantGenerator from "../generators/ConstantGenerator";
 import RandomGenerator from "../generators/RandomGenerator";
 import SequenceGenerator from "../generators/SequenceGenerator";
-import TableGenerator, { FlatWeightDistribution, LinearWeightDistribution, TableEntry, WeightDistribution } from "../generators/TableGenerator";
+import TableGenerator, { FlatWeightDistribution, GaussianWeightDistribution, LinearWeightDistribution, TableEntry, WeightDistribution } from "../generators/TableGenerator";
 import * as P from "./parser-generator/parser-generator"
 
 
@@ -28,7 +28,7 @@ const WEIGHT_SEPARATOR = P.token(":")
 
 const TABLE_LINEARILY_DROPPING = P.token("-").mapTo(new LinearWeightDistribution())
 const TABLE_LINEARILY_INCREASING = P.token("+").mapTo(new LinearWeightDistribution(true))
-const TABLE_GAUSSIAN = P.token("~")
+const TABLE_GAUSSIAN = P.token("~").mapTo(new GaussianWeightDistribution())
 
 
 const whiteSpace = P.regExp(/\s*/)
@@ -48,7 +48,8 @@ const tableEntry = P.opt(
 const tableProbabilityDistribution = 
     P.alt(
         TABLE_LINEARILY_DROPPING,
-        TABLE_LINEARILY_INCREASING
+        TABLE_LINEARILY_INCREASING,
+        TABLE_GAUSSIAN,
     ).then(
         P.opt(whiteSpace.skipThenKeep(
             P.surroundedBy(P.token("("), P.surroundedBy(whiteSpace, number.named("probability distribution parameter"), whiteSpace), P.token(")")))

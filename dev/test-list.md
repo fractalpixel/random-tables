@@ -3,10 +3,13 @@
 ## Planned for later
 
 - Better testability for interacting with document, mock it and test parsing?
+- Calculate cutoff point of gaussian weight function so that first value is specified number of times more probable than last value
+
+- Support random tables in tables
 
 ## Implement next
 
-- Gaussian / exponential weighted table generator
+- Support random tables in lists
 
 - Invoke other tables (and pass in parameters?)
 
@@ -22,6 +25,7 @@
 
 ## Implemented
 
+- Gaussian / exponential weighted table generator
 - Handle zero or negative as parameter to linear weight distribution (directly pick last entry probably?)
 - Parse linear weight distribution indicator and parameter
 - Linearily up or down weighted table generator

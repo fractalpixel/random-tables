@@ -3,7 +3,7 @@ import { test, expect } from "vitest";
 import ConstantGenerator from "../generators/ConstantGenerator"
 import RandomGenerator from "../generators/RandomGenerator"
 import SequenceGenerator from "../generators/SequenceGenerator"
-import TableGenerator, { FlatWeightDistribution, LinearWeightDistribution, TableEntry } from "../generators/TableGenerator"
+import TableGenerator, { FlatWeightDistribution, GaussianWeightDistribution, LinearWeightDistribution, TableEntry } from "../generators/TableGenerator"
 import { parseGenerator } from "./generator-parser"
 import { ParseResult } from "./parser-generator/parser-generator"
 
@@ -111,8 +111,15 @@ test("Linear probability table", () => {
     expectParserEquals("{+a;b;c}",
         new TableGenerator(["a", "b", "c"], new LinearWeightDistribution(true))
     )
-
 })
+
+
+test("Gaussian probability table", () => {
+    expectParserEquals("{~a;b;c}",
+        new TableGenerator(["a", "b", "c"], new GaussianWeightDistribution())
+    )
+})
+
 
 
 function expectParserEquals(input: string, generator: RandomGenerator) {

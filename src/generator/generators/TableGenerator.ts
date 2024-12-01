@@ -18,21 +18,21 @@ export default class TableGenerator extends RandomGenerator {
      * @param distributionParameter a parameter for the weight distribution specified in the table code, or undefined to use default values.
      */
     constructor(
-        entries: (TableEntry|RandomGenerator|string)[],
-        private defaultWeightDistribution: WeightDistribution = FlatWeightDistribution, 
+        entries: (TableEntry | RandomGenerator | string)[],
+        private defaultWeightDistribution: WeightDistribution = FlatWeightDistribution,
         private distributionParameter: number | undefined = undefined
     ) {
         super()
 
         // Convert entries to weight and generator pairs
         this.entries = entries.map((e) => {
-            if (typeof e == 'string') 
+            if (typeof e == 'string')
                 return new TableEntry(undefined, new ConstantGenerator(e))
-            else if (e instanceof RandomGenerator) 
+            else if (e instanceof RandomGenerator)
                 return new TableEntry(undefined, e)
-            else 
+            else
                 return e
-        } )
+        })
     }
 
     protected override doGenerate(random: Random, parameters: Map<string, string>): string {
@@ -47,7 +47,7 @@ export default class TableGenerator extends RandomGenerator {
 
         // Determine total weight
         const totalWeight = this.entries.reduce<number>(
-            (sum, entry, index) => sum + calculateEntryWeight(entry, index), 
+            (sum, entry, index) => sum + calculateEntryWeight(entry, index),
             0
         )
 
@@ -70,12 +70,12 @@ export default class TableGenerator extends RandomGenerator {
 
         // If we get here there was a rounding error or the algorithm is broken.
         // We'll assume the former (as we try to test for the latter) and return the last entry
-        return this.entries[this.entries.length-1]!.value.generate(random, parameters)
+        return this.entries[this.entries.length - 1]!.value.generate(random, parameters)
     }
 }
 
 export class TableEntry {
-    constructor(public readonly weight: number | undefined, public readonly value: RandomGenerator) {}
+    constructor(public readonly weight: number | undefined, public readonly value: RandomGenerator) { }
 }
 
 /**
@@ -97,7 +97,7 @@ export interface WeightDistribution {
 /**
  * A flat probability distribution, all entries have the weight 1.
  */
-class FlatWeightDistributionImpl implements WeightDistribution{
+class FlatWeightDistributionImpl implements WeightDistribution {
     weightFor(entryIndex: number, totalEntries: number, distributionParameter: number | undefined): number {
         return 1
     }
@@ -109,8 +109,8 @@ export const FlatWeightDistribution = new FlatWeightDistributionImpl
 /**
  * A linear weight distribution
  */
-export class LinearWeightDistribution implements WeightDistribution{
-    constructor(private invert: boolean = false) {}
+export class LinearWeightDistribution implements WeightDistribution {
+    constructor(private invert: boolean = false) { }
 
     weightFor(entryIndex: number, totalEntries: number, distributionParameter: number | undefined): number {
 
@@ -120,14 +120,14 @@ export class LinearWeightDistribution implements WeightDistribution{
         // Handle case of zero or negative parameter
         // Logically we should return the lastmost on dropping probabilities, 
         // or the firstmost on rising probabilities
-        if (distributionParameter !== undefined && distributionParameter <= 0) 
+        if (distributionParameter !== undefined && distributionParameter <= 0)
             if (this.invert) return entryIndex <= 0 ? totalEntries : 0
             else return entryIndex >= (totalEntries - 1) ? totalEntries : 0
 
         // Determine how much more likely the first entry should be compared to the last.
         let p = distributionParameter || totalEntries
         if (this.invert) p = 1 / p
-        
+
         // Calculate sum of weights if we interpolated linearily from p to 1
         // (Sum of arithmetic series)
         const weightSum = totalEntries * (p + 1) / 2
@@ -136,7 +136,31 @@ export class LinearWeightDistribution implements WeightDistribution{
         const scalingFactor = totalEntries / weightSum
 
         // Linearily interpolate p*scalingFactor for first entry to 1*scalingFactor for last entry
-        const t = entryIndex / (totalEntries-1) // 0 for first, 1 for last
+        const t = entryIndex / (totalEntries - 1) // 0 for first, 1 for last
         return (p * (1 - t) + t) * scalingFactor
     }
+}
+
+
+export class GaussianWeightDistribution implements WeightDistribution {
+
+    constructor() {}
+
+    weightFor(entryIndex: number, totalEntries: number, distributionParameter: number | undefined): number {
+        const scale = 3 // Last items will be rare, but not super-rare
+        const pos = scale * entryIndex / (totalEntries-1)
+        const weight = 2*normalDistribution(pos, 0, 1) // Double, as we are using only one side, and we need to get a total integral of 1.
+        return weight * totalEntries // Scale total weight so that average weight is 1
+    }
+
+}
+
+function normalDistribution(x: number, mean: number = 0, stdDev: number = 1): number {
+    // https://en.wikipedia.org/wiki/Normal_distribution
+
+    const stdDevSquared = stdDev * stdDev
+    const xAdjustedByMean = x - mean
+
+    const eExponent = -xAdjustedByMean*xAdjustedByMean / (2 * stdDevSquared)
+    return Math.exp(eExponent) / Math.sqrt(2 * Math.PI * stdDevSquared)
 }
