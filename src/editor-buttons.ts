@@ -22,7 +22,7 @@
 import { DecorationSet, WidgetType, Decoration, ViewUpdate, PluginValue, EditorView, PluginSpec, ViewPlugin } from "@codemirror/view";
 import { RangeSetBuilder } from '@codemirror/state';
 import { RANDOM_TABLES_PLUGIN_CONTEXT } from "./main";
-import { HIDE_BUTTON_MARGIN, KEYWORD_END_BRACKET, KEYWORD_END_BRACKET_ESCAPED, KEYWORD_START_BRACKET, KEYWORD_START_BRACKET_ESCAPED, RANDOM_RESULT_KEYWORD, RANDOM_TABLE_KEYWORD } from "./settings";
+import { HIDE_BUTTON_MARGIN, KEYWORD_END_BRACKET, KEYWORD_END_BRACKET_ESCAPED, KEYWORD_START_BRACKET, KEYWORD_START_BRACKET_ESCAPED, RANDOM_RESULT_KEYWORD, RANDOM_TABLE_END_KEYWORD, RANDOM_TABLE_KEYWORD, RANDOM_TABLE_START_KEYWORD } from "./settings";
 
 type ButtonType = "RandomGenerationButton" | "RandomGenerationSaveButton"
 
@@ -94,8 +94,9 @@ class RandomTableEditorPlugin implements PluginValue {
 
 		let decorations:[start:number,end:number,decoration:Decoration][] = []
 
-		buildButtonDecorations(decorations, view, RANDOM_TABLE_KEYWORD, "RandomGenerationButton", "Generate")
-		buildButtonDecorations(decorations, view, RANDOM_RESULT_KEYWORD, "RandomGenerationSaveButton", "Save Result")
+		buildButtonDecorations(decorations, view, RANDOM_TABLE_START_KEYWORD, "RandomTableStart", "Random Table")
+		buildButtonDecorations(decorations, view, RANDOM_TABLE_END_KEYWORD, "RandomTableEnd", "Generate")
+		buildButtonDecorations(decorations, view, RANDOM_RESULT_KEYWORD, "RandomTableResultEnd", "Save Result")
 
 		// Code mirror flips out if the decorations are not supplied to it pre-sorted.
 		// Seems this is a common cause of bugs for apps using code mirror.

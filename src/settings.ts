@@ -8,9 +8,14 @@ export const KEYWORD_START_BRACKET_ESCAPED = escapeRegex(KEYWORD_START_BRACKET)
 export const KEYWORD_END_BRACKET_ESCAPED = escapeRegex(KEYWORD_END_BRACKET)
 
 /**
- * Keyword used to indicate a random table.  Must be endclosed in brackets {}
+ * Keyword used to indicate the start of a random table.  Must be endclosed in brackets {}
  */
-export const RANDOM_TABLE_KEYWORD = "RandomTable"
+export const RANDOM_TABLE_START_KEYWORD = "RandomTableStart"
+
+/**
+ * Keyword used to indicate the end of a random table.  Must be endclosed in brackets {}
+ */
+export const RANDOM_TABLE_END_KEYWORD = "RandomTableEnd"
 
 /**
  * Keyword used to indicate end of a generated result.  Must be endclosed in brackets {}
